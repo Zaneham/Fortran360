@@ -4,7 +4,7 @@
 
 ## What Is This, Then?
 
-This is a Python wrapper that lets you compile FORTRAN IV programs using the actual IBM compilers from the 1960s. Not a recreation. Not a reimplementation. The genuine article—the same bits that ran on machines the size of refrigerators, now executing on your laptop whilst it pretends to be a mainframe.
+This is a Python wrapper that lets you compile FORTRAN IV programs using the actual IBM compilers from the 1960s. Not a recreation. Not a reimplementation. The genuine article, the same bits that ran on machines the size of refrigerators, now executing on your laptop whilst it pretends to be a mainframe.
 
 The compilers were preserved on a CD-ROM image from the [MVS 3.8j Turnkey system](http://wotho.ethz.ch/tk4-/), lovingly maintained by people who understand that some software is too historically significant to let die. We found them there, blew off the digital dust, and put them back to work.
 

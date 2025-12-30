@@ -1,6 +1,9 @@
 """
 Command-line interface for FORTRAN 360.
 
+Talks to a 1960s mainframe so you don't have to learn JCL.
+You're welcome.
+
 Usage:
     fortran360 compile hello.f           # Compile only
     fortran360 run hello.f               # Compile, link, and execute
@@ -25,7 +28,7 @@ from .parser import parse_fortran_output, JobResult
 
 
 def get_compiler(era: str) -> Compiler:
-    """Get compiler from era string."""
+    """Get compiler from era string. Time travel, basically."""
     era_map = {
         "G": Compiler.G,
         "1966": Compiler.G,
@@ -69,7 +72,7 @@ def format_result(result: JobResult, verbose: bool = False) -> str:
 
 
 def cmd_compile(args) -> int:
-    """Handle compile command."""
+    """Handle compile command. Sends your code back to 1966."""
     # Read source file
     source_path = Path(args.source)
     if not source_path.exists():
@@ -127,7 +130,7 @@ def cmd_compile(args) -> int:
 
 
 def cmd_run(args) -> int:
-    """Handle run command (compile + link + go)."""
+    """Handle run command (compile + link + go). The full mainframe experience."""
     # Read source file
     source_path = Path(args.source)
     if not source_path.exists():
@@ -218,7 +221,7 @@ def cmd_run(args) -> int:
 
 
 def cmd_status(args) -> int:
-    """Check MVS status."""
+    """Check MVS status. Is the mainframe awake?"""
     conn = MVSConnection()
 
     if conn.is_available():

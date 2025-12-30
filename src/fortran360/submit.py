@@ -1,5 +1,8 @@
 """
 Job submission to MVS via Hercules card reader socket.
+
+Simulates feeding punch cards into a hopper, except the hopper is a TCP socket
+and the cards are ASCII strings. Progress.
 """
 
 import os
@@ -14,7 +17,7 @@ from .parser import parse_fortran_output, JobResult
 
 @dataclass
 class MVSConfig:
-    """Configuration for MVS connection."""
+    """Configuration for MVS connection. Coordinates for the time machine."""
     host: str = "localhost"
     reader_port: int = 3505
     printer_dir: str = r"C:\Mainframe\prt"
@@ -22,18 +25,18 @@ class MVSConfig:
 
 
 class JobSubmissionError(Exception):
-    """Error during job submission."""
+    """Error during job submission. The mainframe is displeased."""
     pass
 
 
 class MVSConnection:
-    """Manages connection to MVS via Hercules."""
+    """Manages connection to MVS via Hercules. Your portal to 1966."""
 
     def __init__(self, config: Optional[MVSConfig] = None):
         self.config = config or MVSConfig()
 
     def is_available(self) -> bool:
-        """Check if MVS is available (card reader listening)."""
+        """Check if MVS is available. Is anybody home in 1966?"""
         try:
             sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             sock.settimeout(2)
@@ -45,16 +48,16 @@ class MVSConnection:
 
     def submit_jcl(self, jcl: str) -> bool:
         """
-        Submit JCL to MVS card reader.
+        Submit JCL to MVS card reader. Feed the beast.
 
         Args:
-            jcl: JCL text to submit
+            jcl: JCL text to submit (80 columns or perish)
 
         Returns:
-            True if submission successful
+            True if the mainframe deigned to accept your offering
 
         Raises:
-            JobSubmissionError: If submission fails
+            JobSubmissionError: The mainframe rejected your cards
         """
         try:
             sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -81,7 +84,7 @@ class MVSConnection:
             raise JobSubmissionError(f"Submission failed: {e}")
 
     def get_printer_files(self) -> List[Path]:
-        """Get list of printer spool files sorted by modification time."""
+        """Get list of printer spool files. Check the green-bar paper."""
         printer_dir = Path(self.config.printer_dir)
         if not printer_dir.exists():
             return []
@@ -96,7 +99,8 @@ class MVSConnection:
         pre_file: Optional[Path] = None
     ) -> Optional[str]:
         """
-        Wait for new printer output.
+        Wait for new printer output. The 1960s equivalent of watching
+        a progress bar, except you're watching a file grow.
 
         Args:
             job_name: Name of job to look for
@@ -104,7 +108,7 @@ class MVSConnection:
             pre_file: Path to printer file to monitor
 
         Returns:
-            New output content (just this job) or None if timeout
+            New output content or None if the mainframe is ignoring you
         """
         start_time = time.time()
 
@@ -136,13 +140,14 @@ class MVSConnection:
     def _extract_job_output(self, content: str, job_name: str) -> str:
         """
         Extract a single job's output from printer spool content.
+        Like finding your printout in a stack of green-bar paper.
 
         Args:
-            content: Raw printer spool content
-            job_name: Name of job to extract
+            content: Raw printer spool content (the whole stack)
+            job_name: Name of job to extract (your handwriting on the corner)
 
         Returns:
-            Extracted job output
+            Just your bit of the printout
         """
         lines = content.split('\n')
         job_output = []
@@ -169,16 +174,17 @@ def generate_compile_jcl(
     options: Optional[str] = None
 ) -> str:
     """
-    Generate JCL for FORTRAN compilation.
+    Generate JCL for FORTRAN compilation. The incantation that makes
+    the mainframe actually do something useful.
 
     Args:
-        source_code: FORTRAN source code
-        job_name: JCL job name (max 8 chars)
+        source_code: FORTRAN source code (columns 1-72 matter)
+        job_name: JCL job name (max 8 chars, like a vanity plate)
         compiler: Compiler program (IEYFORT=G, IEKAA00=H)
-        options: Compiler options (PARM)
+        options: Compiler options (PARM string of doom)
 
     Returns:
-        Complete JCL for compilation
+        Complete JCL, ready for the card reader
     """
     job_name = job_name[:8].upper()
 
@@ -211,6 +217,7 @@ def compile_fortran(
 ) -> JobResult:
     """
     Compile FORTRAN source code using authentic IBM compiler.
+    The main event. The reason we're all here.
 
     Args:
         source_code: FORTRAN source code
@@ -219,10 +226,10 @@ def compile_fortran(
         config: MVS connection configuration
 
     Returns:
-        JobResult with compilation results
+        JobResult with what the mainframe thought of your code
 
     Raises:
-        JobSubmissionError: If compilation fails
+        JobSubmissionError: The mainframe has opinions about your code
     """
     conn = MVSConnection(config)
 

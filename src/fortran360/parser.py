@@ -2,6 +2,7 @@
 Output parser for IBM FORTRAN G/H compiler output.
 
 Extracts structured data from JES2 printer spool files.
+Translates 1960s mainframe hieroglyphics into something Python can understand.
 """
 
 import re
@@ -11,17 +12,17 @@ from enum import Enum
 
 
 class Severity(Enum):
-    """Diagnostic severity levels."""
-    INFO = 0
-    WARNING = 4
-    ERROR = 8
-    SEVERE = 12
-    TERMINAL = 16
+    """Diagnostic severity levels. How badly did you upset the compiler?"""
+    INFO = 0         # Compiler is just chatting
+    WARNING = 4      # Compiler is concerned
+    ERROR = 8        # Compiler is upset
+    SEVERE = 12      # Compiler is furious
+    TERMINAL = 16    # Compiler has given up on you
 
 
 @dataclass
 class Diagnostic:
-    """A single compiler diagnostic message."""
+    """A single compiler diagnostic message. The mainframe's critique."""
     line_number: int
     code: str  # e.g., "IEY013I"
     severity: Severity
@@ -31,7 +32,7 @@ class Diagnostic:
 
 @dataclass
 class CompileStats:
-    """Compiler statistics."""
+    """Compiler statistics. How much paper did that just cost?"""
     source_statements: int = 0
     program_size: int = 0
     diagnostics_count: int = 0
@@ -40,7 +41,7 @@ class CompileStats:
 
 @dataclass
 class JobResult:
-    """Complete result of a compilation job."""
+    """Complete result of a compilation job. The verdict is in."""
     job_name: str
     job_number: int
     step_name: str
@@ -57,22 +58,26 @@ class JobResult:
 
     @property
     def success(self) -> bool:
-        """True if compilation succeeded (RC <= 4)."""
+        """True if compilation succeeded (RC <= 4). Did you pass the vibe check?"""
         return self.return_code <= 4
 
     @property
     def has_warnings(self) -> bool:
-        """True if there were warning-level diagnostics."""
+        """True if compiler was mildly disapproving."""
         return any(d.severity == Severity.WARNING for d in self.diagnostics)
 
     @property
     def has_errors(self) -> bool:
-        """True if there were error-level diagnostics."""
+        """True if compiler was properly cross with you."""
         return any(d.severity.value >= Severity.ERROR.value for d in self.diagnostics)
 
 
 class FortranOutputParser:
-    """Parser for FORTRAN G/H compiler output from JES2 spool."""
+    """Parser for FORTRAN G/H compiler output from JES2 spool.
+
+    Regex archaeology at its finest. These patterns decode output formats
+    that haven't changed since the Johnson administration.
+    """
 
     # Regex patterns for parsing
     RE_JOB_HEADER = re.compile(
@@ -107,7 +112,7 @@ class FortranOutputParser:
     )
 
     def parse(self, output: str) -> Optional[JobResult]:
-        """Parse compiler output and return structured result."""
+        """Parse compiler output and return structured result. Archaeology mode: ON."""
         # Find the FORTRAN job section
         job_match = self.RE_JOB_HEADER.search(output)
         if not job_match:
@@ -182,7 +187,7 @@ class FortranOutputParser:
         )
 
     def _parse_diagnostics(self, output: str) -> List[Diagnostic]:
-        """Extract individual diagnostic messages."""
+        """Extract individual diagnostic messages. What exactly went wrong?"""
         diagnostics = []
         lines = output.split('\n')
 
@@ -229,7 +234,7 @@ class FortranOutputParser:
         return diagnostics
 
     def _parse_source_listing(self, output: str) -> List[str]:
-        """Extract the source listing section."""
+        """Extract the source listing section. Your code, as the mainframe saw it."""
         source_lines = []
         in_source = False
 
@@ -253,6 +258,7 @@ class FortranOutputParser:
 
 
 def parse_fortran_output(output: str) -> Optional[JobResult]:
-    """Convenience function to parse FORTRAN compiler output."""
+    """Convenience function to parse FORTRAN compiler output.
+    For when you can't be bothered instantiating a parser yourself."""
     parser = FortranOutputParser()
     return parser.parse(output)

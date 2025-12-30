@@ -114,8 +114,12 @@ def generate_compile_link_jcl(
     job_name = sanitize_name(job_name)
     load_name = sanitize_name(load_name)
 
-    # Compiler PARM
-    parm_parts = ["SOURCE", "NODECK", "LOAD", "NOMAP"]
+    # Compiler PARM - use compile_options
+    parm_parts = []
+    parm_parts.append("SOURCE" if compile_options.source_list else "NOSOURCE")
+    parm_parts.append("DECK" if compile_options.object_deck else "NODECK")
+    parm_parts.append("LOAD" if compile_options.load_module else "NOLOAD")
+    parm_parts.append("MAP" if compile_options.map else "NOMAP")
     parm = ",".join(parm_parts)
 
     # Linker PARM
@@ -169,11 +173,23 @@ def generate_compile_link_go_jcl(
     job_name = sanitize_name(job_name)
     load_name = sanitize_name(load_name)
 
-    # Compiler PARM
-    parm = "SOURCE,NODECK,LOAD,NOMAP"
+    # Compiler PARM - use compile_options
+    parm_parts = []
+    parm_parts.append("SOURCE" if compile_options.source_list else "NOSOURCE")
+    parm_parts.append("DECK" if compile_options.object_deck else "NODECK")
+    parm_parts.append("LOAD" if compile_options.load_module else "NOLOAD")
+    parm_parts.append("MAP" if compile_options.map else "NOMAP")
+    parm = ",".join(parm_parts)
 
-    # Linker PARM
-    link_parm = "MAP,LET"
+    # Linker PARM - use link_options
+    link_parm_parts = []
+    if link_options.map:
+        link_parm_parts.append("MAP")
+    if link_options.let:
+        link_parm_parts.append("LET")
+    if link_options.xref:
+        link_parm_parts.append("XREF")
+    link_parm = ",".join(link_parm_parts) if link_parm_parts else "MAP,LET"
 
     # Build input data section if provided
     input_section = ""

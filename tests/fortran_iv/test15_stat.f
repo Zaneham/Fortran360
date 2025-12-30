@@ -1,0 +1,142 @@
+C     TEST15 - STATISTICAL FUNCTIONS
+C     MEAN, VARIANCE, STANDARD DEVIATION, CORRELATION
+C
+      REAL X(20), Y(20)
+      REAL XMEAN, XVAR, XSD
+      REAL YMEAN, YVAR, YSD
+      REAL CORR
+      INTEGER I, N
+C
+      WRITE(6,100)
+  100 FORMAT(' STATISTICAL FUNCTION TESTS:')
+C
+C     GENERATE TEST DATA
+      N = 10
+      DO 10 I = 1, N
+         X(I) = I
+         Y(I) = 2.0 * I + 1.0
+   10 CONTINUE
+C
+      WRITE(6,110)
+  110 FORMAT(' TEST DATA (Y = 2X + 1):')
+      DO 20 I = 1, N
+         WRITE(6,120) I, X(I), Y(I)
+  120    FORMAT('   ',I2,': X=',F6.1,' Y=',F6.1)
+   20 CONTINUE
+C
+C     COMPUTE STATISTICS FOR X
+      CALL STATS(X, N, XMEAN, XVAR, XSD)
+      WRITE(6,200)
+  200 FORMAT(/,' STATISTICS FOR X:')
+      WRITE(6,210) XMEAN
+  210 FORMAT('   MEAN     = ',F10.4)
+      WRITE(6,220) XVAR
+  220 FORMAT('   VARIANCE = ',F10.4)
+      WRITE(6,230) XSD
+  230 FORMAT('   STD DEV  = ',F10.4)
+C
+C     COMPUTE STATISTICS FOR Y
+      CALL STATS(Y, N, YMEAN, YVAR, YSD)
+      WRITE(6,300)
+  300 FORMAT(/,' STATISTICS FOR Y:')
+      WRITE(6,210) YMEAN
+      WRITE(6,220) YVAR
+      WRITE(6,230) YSD
+C
+C     COMPUTE CORRELATION
+      CALL CORREL(X, Y, N, CORR)
+      WRITE(6,400)
+  400 FORMAT(/,' CORRELATION COEFFICIENT:')
+      WRITE(6,410) CORR
+  410 FORMAT('   R = ',F10.6)
+      WRITE(6,420)
+  420 FORMAT('   (EXPECTED: 1.0 FOR PERFECT LINEAR RELATIONSHIP)')
+C
+C     TEST WITH RANDOM-ISH DATA
+      WRITE(6,500)
+  500 FORMAT(/,' TEST WITH LESS CORRELATED DATA:')
+      X(1) = 1.0
+      Y(1) = 2.3
+      X(2) = 2.0
+      Y(2) = 3.1
+      X(3) = 3.0
+      Y(3) = 4.8
+      X(4) = 4.0
+      Y(4) = 5.2
+      X(5) = 5.0
+      Y(5) = 7.1
+      N = 5
+C
+      CALL STATS(X, N, XMEAN, XVAR, XSD)
+      CALL STATS(Y, N, YMEAN, YVAR, YSD)
+      CALL CORREL(X, Y, N, CORR)
+C
+      WRITE(6,510) XMEAN, XSD
+  510 FORMAT('   X: MEAN=',F8.4,' SD=',F8.4)
+      WRITE(6,520) YMEAN, YSD
+  520 FORMAT('   Y: MEAN=',F8.4,' SD=',F8.4)
+      WRITE(6,530) CORR
+  530 FORMAT('   CORRELATION R = ',F10.6)
+C
+      WRITE(6,999)
+  999 FORMAT(' TEST15 COMPLETE')
+      STOP
+      END
+C
+C     COMPUTE MEAN, VARIANCE, AND STANDARD DEVIATION
+C
+      SUBROUTINE STATS(X, N, XMEAN, XVAR, XSD)
+      INTEGER N, I
+      REAL X(1), XMEAN, XVAR, XSD
+      REAL SUM, SUMSQ
+C
+      SUM = 0.0
+      DO 10 I = 1, N
+         SUM = SUM + X(I)
+   10 CONTINUE
+      XMEAN = SUM / N
+C
+      SUMSQ = 0.0
+      DO 20 I = 1, N
+         SUMSQ = SUMSQ + (X(I) - XMEAN)**2
+   20 CONTINUE
+      XVAR = SUMSQ / N
+      XSD = SQRT(XVAR)
+C
+      RETURN
+      END
+C
+C     COMPUTE CORRELATION COEFFICIENT
+C
+      SUBROUTINE CORREL(X, Y, N, R)
+      INTEGER N, I
+      REAL X(1), Y(1), R
+      REAL XMEAN, YMEAN, SXY, SXX, SYY
+      REAL SUMX, SUMY, DENOM
+C
+C     COMPUTE MEANS
+      SUMX = 0.0
+      SUMY = 0.0
+      DO 10 I = 1, N
+         SUMX = SUMX + X(I)
+         SUMY = SUMY + Y(I)
+   10 CONTINUE
+      XMEAN = SUMX / N
+      YMEAN = SUMY / N
+C
+C     COMPUTE SUMS FOR CORRELATION
+      SXY = 0.0
+      SXX = 0.0
+      SYY = 0.0
+      DO 20 I = 1, N
+         SXY = SXY + (X(I) - XMEAN) * (Y(I) - YMEAN)
+         SXX = SXX + (X(I) - XMEAN)**2
+         SYY = SYY + (Y(I) - YMEAN)**2
+   20 CONTINUE
+C
+      DENOM = SXX * SYY
+      R = 0.0
+      IF (DENOM .GT. 0.0) R = SXY / SQRT(DENOM)
+C
+      RETURN
+      END

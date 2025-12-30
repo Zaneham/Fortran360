@@ -1,0 +1,93 @@
+C     TEST11 - TRAPEZOIDAL INTEGRATION
+C     NUMERICAL INTEGRATION USING TRAPEZOIDAL RULE
+C     (SIMPLIFIED VERSION OF SLATEC-STYLE INTEGRATION)
+C
+      REAL X(11), Y(11), RESULT
+      REAL A, B, H
+      INTEGER I, N
+C
+      WRITE(6,100)
+  100 FORMAT(' TRAPEZOIDAL INTEGRATION TEST:')
+C
+C     INTEGRATE SIN(X) FROM 0 TO PI
+C     EXACT ANSWER = 2.0
+C
+      N = 11
+      A = 0.0
+      B = 3.14159265
+      H = (B - A) / (N - 1)
+C
+C     TABULATE THE FUNCTION
+      DO 10 I = 1, N
+         X(I) = A + (I-1) * H
+         Y(I) = SIN(X(I))
+   10 CONTINUE
+C
+      WRITE(6,110)
+  110 FORMAT(' X AND Y VALUES:')
+      DO 20 I = 1, N
+         WRITE(6,120) I, X(I), Y(I)
+  120    FORMAT('   ',I2,': X=',F8.5,' Y=',F10.6)
+   20 CONTINUE
+C
+C     APPLY TRAPEZOIDAL RULE
+      CALL TRAPZ(X, Y, N, RESULT)
+C
+      WRITE(6,200) RESULT
+  200 FORMAT(' INTEGRAL OF SIN(X) FROM 0 TO PI = ',F10.6)
+      WRITE(6,210)
+  210 FORMAT(' EXACT VALUE = 2.000000')
+      WRITE(6,220) ABS(RESULT - 2.0)
+  220 FORMAT(' ERROR = ',F10.6)
+C
+C     TEST WITH FINER GRID
+      WRITE(6,300)
+  300 FORMAT(/,' CONVERGENCE TEST:')
+C
+      CALL TESTGRID(5)
+      CALL TESTGRID(11)
+      CALL TESTGRID(21)
+      CALL TESTGRID(51)
+      CALL TESTGRID(101)
+C
+      WRITE(6,999)
+  999 FORMAT(' TEST11 COMPLETE')
+      STOP
+      END
+C
+C     TRAPEZOIDAL INTEGRATION SUBROUTINE
+C
+      SUBROUTINE TRAPZ(X, Y, N, RESULT)
+      INTEGER N, I
+      REAL X(1), Y(1), RESULT, SUM
+C
+      SUM = 0.0
+      DO 10 I = 1, N-1
+         SUM = SUM + 0.5 * (Y(I) + Y(I+1)) * (X(I+1) - X(I))
+   10 CONTINUE
+      RESULT = SUM
+      RETURN
+      END
+C
+C     TEST WITH DIFFERENT GRID SIZES
+C
+      SUBROUTINE TESTGRID(N)
+      INTEGER N, I
+      REAL X(200), Y(200), RESULT
+      REAL A, B, H, ERR
+C
+      A = 0.0
+      B = 3.14159265
+      H = (B - A) / (N - 1)
+C
+      DO 10 I = 1, N
+         X(I) = A + (I-1) * H
+         Y(I) = SIN(X(I))
+   10 CONTINUE
+C
+      CALL TRAPZ(X, Y, N, RESULT)
+      ERR = ABS(RESULT - 2.0)
+      WRITE(6,100) N, RESULT, ERR
+  100 FORMAT('   N=',I4,' RESULT=',F10.6,' ERROR=',E10.3)
+      RETURN
+      END

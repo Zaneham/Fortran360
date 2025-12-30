@@ -1,0 +1,104 @@
+C     TEST12 - NEWTON-RAPHSON ROOT FINDING
+C     ITERATIVE ROOT FINDING ALGORITHM
+C
+      REAL X, ROOT, TOL
+      INTEGER MAXITER, IERR
+C
+      WRITE(6,100)
+  100 FORMAT(' NEWTON-RAPHSON ROOT FINDING TEST:')
+C
+C     FIND ROOT OF X^2 - 2 = 0 (SQRT(2))
+      WRITE(6,110)
+  110 FORMAT(/,' FINDING SQRT(2) [ROOT OF X^2 - 2 = 0]:')
+      X = 1.0
+      TOL = 1.0E-6
+      MAXITER = 20
+      CALL NEWTON(1, X, TOL, MAXITER, ROOT, IERR)
+      IF (IERR .NE. 0) GO TO 115
+      WRITE(6,120) ROOT
+  120 FORMAT(' ROOT FOUND: ',F12.8)
+      WRITE(6,130) SQRT(2.0)
+  130 FORMAT(' EXACT SQRT(2): ',F12.8)
+      GO TO 150
+  115 WRITE(6,140)
+  140 FORMAT(' CONVERGENCE FAILED')
+  150 CONTINUE
+C
+C     FIND ROOT OF X^3 - X - 1 = 0
+      WRITE(6,200)
+  200 FORMAT(/,' FINDING ROOT OF X^3 - X - 1 = 0:')
+      X = 1.5
+      CALL NEWTON(2, X, TOL, MAXITER, ROOT, IERR)
+      IF (IERR .NE. 0) GO TO 215
+      WRITE(6,120) ROOT
+      WRITE(6,210) ROOT**3 - ROOT - 1.0
+  210 FORMAT(' VERIFICATION F(ROOT) = ',E12.4)
+      GO TO 250
+  215 WRITE(6,140)
+  250 CONTINUE
+C
+C     FIND ROOT OF COS(X) - X = 0
+      WRITE(6,300)
+  300 FORMAT(/,' FINDING ROOT OF COS(X) - X = 0:')
+      X = 0.5
+      CALL NEWTON(3, X, TOL, MAXITER, ROOT, IERR)
+      IF (IERR .NE. 0) GO TO 315
+      WRITE(6,120) ROOT
+      WRITE(6,310) COS(ROOT) - ROOT
+  310 FORMAT(' VERIFICATION COS(X)-X = ',E12.4)
+      GO TO 350
+  315 WRITE(6,140)
+  350 CONTINUE
+C
+      WRITE(6,999)
+  999 FORMAT(' TEST12 COMPLETE')
+      STOP
+      END
+C
+C     NEWTON-RAPHSON SUBROUTINE
+C     IFUNC = 1: F(X) = X^2 - 2
+C     IFUNC = 2: F(X) = X^3 - X - 1
+C     IFUNC = 3: F(X) = COS(X) - X
+C
+      SUBROUTINE NEWTON(IFUNC, X0, TOL, MAXITER, ROOT, IERR)
+      INTEGER IFUNC, MAXITER, IERR, ITER
+      REAL X0, TOL, ROOT, X, XNEW, F, DF
+C
+      IERR = 1
+      X = X0
+C
+      DO 100 ITER = 1, MAXITER
+C        EVALUATE FUNCTION AND DERIVATIVE
+         GO TO (10, 20, 30), IFUNC
+C
+   10    F = X*X - 2.0
+         DF = 2.0*X
+         GO TO 50
+C
+   20    F = X*X*X - X - 1.0
+         DF = 3.0*X*X - 1.0
+         GO TO 50
+C
+   30    F = COS(X) - X
+         DF = -SIN(X) - 1.0
+         GO TO 50
+C
+   50    CONTINUE
+         IF (ABS(DF) .LT. 1.0E-12) GO TO 200
+C
+         XNEW = X - F/DF
+         WRITE(6,60) ITER, X, F, XNEW
+   60    FORMAT('   ITER',I3,': X=',F12.8,' F=',E12.4,' XNEW=',F12.8)
+C
+         IF (ABS(XNEW - X) .LT. TOL) GO TO 90
+         X = XNEW
+         GO TO 100
+   90    ROOT = XNEW
+         IERR = 0
+         RETURN
+  100 CONTINUE
+C
+  200 CONTINUE
+      ROOT = X
+      RETURN
+      END

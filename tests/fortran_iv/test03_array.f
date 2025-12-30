@@ -1,0 +1,58 @@
+C     TEST03 - ARRAY OPERATIONS
+C     TESTS ARRAY DECLARATION AND MANIPULATION
+C
+      INTEGER IA(10), IB(10), IC(10)
+      REAL RA(5,5), X
+      INTEGER I, J, ISUM
+      REAL RSUM
+C
+C     INITIALIZE INTEGER ARRAY
+      DO 10 I = 1, 10
+         IA(I) = I
+         IB(I) = I * 2
+   10 CONTINUE
+C
+C     ARRAY ADDITION
+      DO 20 I = 1, 10
+         IC(I) = IA(I) + IB(I)
+   20 CONTINUE
+C
+      WRITE(6,100)
+  100 FORMAT(' ARRAY OPERATIONS:')
+      WRITE(6,110) (IC(I), I=1,10)
+  110 FORMAT(' IC = ',10I5)
+C
+C     SUM OF ARRAY ELEMENTS
+      ISUM = 0
+      DO 30 I = 1, 10
+         ISUM = ISUM + IA(I)
+   30 CONTINUE
+      WRITE(6,120) ISUM
+  120 FORMAT(' SUM OF IA = ',I5)
+C
+C     2D ARRAY - MULTIPLICATION TABLE
+      DO 50 I = 1, 5
+         DO 40 J = 1, 5
+            RA(I,J) = I * J
+   40    CONTINUE
+   50 CONTINUE
+C
+      WRITE(6,200)
+  200 FORMAT(' MULTIPLICATION TABLE:')
+      DO 60 I = 1, 5
+         WRITE(6,210) (RA(I,J), J=1,5)
+  210    FORMAT(5F8.1)
+   60 CONTINUE
+C
+C     DIAGONAL SUM
+      RSUM = 0.0
+      DO 70 I = 1, 5
+         RSUM = RSUM + RA(I,I)
+   70 CONTINUE
+      WRITE(6,220) RSUM
+  220 FORMAT(' DIAGONAL SUM = ',F10.2)
+C
+      WRITE(6,999)
+  999 FORMAT(' TEST03 COMPLETE')
+      STOP
+      END

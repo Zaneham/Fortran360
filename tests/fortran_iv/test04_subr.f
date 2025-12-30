@@ -1,0 +1,80 @@
+C     TEST04 - SUBROUTINE AND FUNCTION
+C     TESTS EXTERNAL PROCEDURES
+C
+      INTEGER N, NFACT
+      REAL X, Y, AVG
+      REAL A(5)
+      INTEGER IFACT
+      REAL AVERAGE
+C
+      WRITE(6,100)
+  100 FORMAT(' SUBROUTINE AND FUNCTION TESTS:')
+C
+C     CALL SUBROUTINE TO SWAP VALUES
+      X = 10.0
+      Y = 25.0
+      WRITE(6,110) X, Y
+  110 FORMAT(' BEFORE SWAP: X=',F8.2,' Y=',F8.2)
+      CALL SWAP(X, Y)
+      WRITE(6,120) X, Y
+  120 FORMAT(' AFTER SWAP:  X=',F8.2,' Y=',F8.2)
+C
+C     TEST FACTORIAL FUNCTION
+      N = 5
+      NFACT = IFACT(N)
+      WRITE(6,130) N, NFACT
+  130 FORMAT(' FACTORIAL(',I2,') = ',I10)
+C
+      N = 7
+      NFACT = IFACT(N)
+      WRITE(6,130) N, NFACT
+C
+C     TEST AVERAGE FUNCTION
+      A(1) = 10.0
+      A(2) = 20.0
+      A(3) = 30.0
+      A(4) = 40.0
+      A(5) = 50.0
+      AVG = AVERAGE(A, 5)
+      WRITE(6,140) AVG
+  140 FORMAT(' AVERAGE OF 10,20,30,40,50 = ',F10.2)
+C
+      WRITE(6,999)
+  999 FORMAT(' TEST04 COMPLETE')
+      STOP
+      END
+C
+C     SUBROUTINE TO SWAP TWO VALUES
+C
+      SUBROUTINE SWAP(A, B)
+      REAL A, B, TEMP
+      TEMP = A
+      A = B
+      B = TEMP
+      RETURN
+      END
+C
+C     INTEGER FUNCTION FOR FACTORIAL
+C
+      INTEGER FUNCTION IFACT(N)
+      INTEGER N, I
+      IFACT = 1
+      IF (N .LE. 1) RETURN
+      DO 10 I = 2, N
+         IFACT = IFACT * I
+   10 CONTINUE
+      RETURN
+      END
+C
+C     REAL FUNCTION FOR AVERAGE
+C
+      REAL FUNCTION AVERAGE(ARR, N)
+      INTEGER N, I
+      REAL ARR(1), SUM
+      SUM = 0.0
+      DO 10 I = 1, N
+         SUM = SUM + ARR(I)
+   10 CONTINUE
+      AVERAGE = SUM / N
+      RETURN
+      END

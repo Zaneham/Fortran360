@@ -1,0 +1,106 @@
+C     TEST_NUMUTIL - TEST SLATEC NUMERICAL UTILITIES
+C     PYTHAG AND ENORM ON IBM SYSTEM/360 FORTRAN G
+C
+      REAL PYTHAG, ENORM
+      REAL A, B, RESULT, EXPECT, ERR
+      REAL X(5)
+      INTEGER I
+C
+      WRITE(6,100)
+  100 FORMAT(' SLATEC NUMERICAL UTILITIES TEST')
+      WRITE(6,110)
+  110 FORMAT(' ================================')
+      WRITE(6,120)
+  120 FORMAT(' ')
+C
+C     TEST PYTHAG - SQRT(A**2 + B**2) WITHOUT OVERFLOW
+      WRITE(6,200)
+  200 FORMAT(' PYTHAG TESTS (SQRT(A**2+B**2)):')
+C
+C     PYTHAG(3,4) = 5
+      A = 3.0
+      B = 4.0
+      RESULT = PYTHAG(A, B)
+      EXPECT = 5.0
+      ERR = ABS(RESULT - EXPECT)
+      WRITE(6,210) A, B, RESULT, EXPECT, ERR
+  210 FORMAT('   PYTHAG(',F6.1,',',F6.1,')=',F10.4,
+     1       ' EXPECT=',F10.4,' ERR=',E10.2)
+C
+C     PYTHAG(5,12) = 13
+      A = 5.0
+      B = 12.0
+      RESULT = PYTHAG(A, B)
+      EXPECT = 13.0
+      ERR = ABS(RESULT - EXPECT)
+      WRITE(6,210) A, B, RESULT, EXPECT, ERR
+C
+C     PYTHAG(1,1) = SQRT(2)
+      A = 1.0
+      B = 1.0
+      RESULT = PYTHAG(A, B)
+      EXPECT = 1.4142136
+      ERR = ABS(RESULT - EXPECT)
+      WRITE(6,210) A, B, RESULT, EXPECT, ERR
+C
+C     PYTHAG(0,5) = 5
+      A = 0.0
+      B = 5.0
+      RESULT = PYTHAG(A, B)
+      EXPECT = 5.0
+      ERR = ABS(RESULT - EXPECT)
+      WRITE(6,210) A, B, RESULT, EXPECT, ERR
+C
+C     LARGE VALUES - WOULD OVERFLOW WITH NAIVE SQRT(A**2+B**2)
+      A = 1.0E30
+      B = 1.0E30
+      RESULT = PYTHAG(A, B)
+      EXPECT = 1.4142136E30
+      ERR = ABS(RESULT - EXPECT) / EXPECT
+      WRITE(6,220) A, B, RESULT, ERR
+  220 FORMAT('   PYTHAG(',E10.2,',',E10.2,')=',E12.4,
+     1       ' REL.ERR=',E10.2)
+C
+      WRITE(6,120)
+C
+C     TEST ENORM - EUCLIDEAN NORM
+      WRITE(6,300)
+  300 FORMAT(' ENORM TESTS (EUCLIDEAN NORM):')
+C
+C     ENORM([3,4]) = 5
+      X(1) = 3.0
+      X(2) = 4.0
+      RESULT = ENORM(2, X)
+      EXPECT = 5.0
+      ERR = ABS(RESULT - EXPECT)
+      WRITE(6,310) RESULT, EXPECT, ERR
+  310 FORMAT('   ENORM([3,4])=',F10.4,' EXPECT=',F10.4,
+     1       ' ERR=',E10.2)
+C
+C     ENORM([1,2,2]) = 3
+      X(1) = 1.0
+      X(2) = 2.0
+      X(3) = 2.0
+      RESULT = ENORM(3, X)
+      EXPECT = 3.0
+      ERR = ABS(RESULT - EXPECT)
+      WRITE(6,320) RESULT, EXPECT, ERR
+  320 FORMAT('   ENORM([1,2,2])=',F10.4,' EXPECT=',F10.4,
+     1       ' ERR=',E10.2)
+C
+C     ENORM([1,1,1,1,1]) = SQRT(5)
+      DO 400 I = 1, 5
+         X(I) = 1.0
+  400 CONTINUE
+      RESULT = ENORM(5, X)
+      EXPECT = 2.2360680
+      ERR = ABS(RESULT - EXPECT)
+      WRITE(6,330) RESULT, EXPECT, ERR
+  330 FORMAT('   ENORM([1,1,1,1,1])=',F10.4,' EXPECT=',F10.4,
+     1       ' ERR=',E10.2)
+C
+      WRITE(6,120)
+      WRITE(6,500)
+  500 FORMAT(' SLATEC NUMERICAL UTILITIES TEST COMPLETE')
+      STOP
+      END

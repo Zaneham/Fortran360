@@ -1,0 +1,61 @@
+C     TEST08 - COMMON BLOCKS
+C     TESTS COMMON BLOCK DATA SHARING
+C
+      REAL A, B, C
+      INTEGER N
+      COMMON /BLK1/ A, B, C
+      COMMON /BLK2/ N
+C
+      WRITE(6,100)
+  100 FORMAT(' COMMON BLOCK TESTS:')
+C
+C     SET VALUES IN COMMON
+      A = 10.0
+      B = 20.0
+      C = 30.0
+      N = 5
+C
+      WRITE(6,110) A, B, C, N
+  110 FORMAT(' BEFORE CALL: A=',F6.1,' B=',F6.1,' C=',F6.1,' N=',I3)
+C
+C     CALL SUBROUTINE THAT MODIFIES COMMON
+      CALL MODCOM
+C
+      WRITE(6,120) A, B, C, N
+  120 FORMAT(' AFTER CALL:  A=',F6.1,' B=',F6.1,' C=',F6.1,' N=',I3)
+C
+C     CALL SUBROUTINE TO COMPUTE WITH COMMON
+      CALL COMPAV
+C
+      WRITE(6,130) A, B, C
+  130 FORMAT(' AFTER COMPAV: A=',F6.1,' B=',F6.1,' C=',F6.1)
+C
+      WRITE(6,999)
+  999 FORMAT(' TEST08 COMPLETE')
+      STOP
+      END
+C
+C     SUBROUTINE TO MODIFY COMMON BLOCK VALUES
+C
+      SUBROUTINE MODCOM
+      REAL A, B, C
+      INTEGER N
+      COMMON /BLK1/ A, B, C
+      COMMON /BLK2/ N
+C
+      A = A * 2.0
+      B = B * 2.0
+      C = C * 2.0
+      N = N + 10
+      RETURN
+      END
+C
+C     SUBROUTINE TO COMPUTE AVERAGE INTO C
+C
+      SUBROUTINE COMPAV
+      REAL A, B, C
+      COMMON /BLK1/ A, B, C
+C
+      C = (A + B) / 2.0
+      RETURN
+      END

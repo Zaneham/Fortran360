@@ -1,0 +1,12 @@
+C     SUM OF FIRST N INTEGERS
+C     DEMONSTRATES DO LOOP AND ARITHMETIC
+      INTEGER I, N, TOTAL
+      N = 100
+      TOTAL = 0
+      DO 10 I = 1, N
+         TOTAL = TOTAL + I
+   10 CONTINUE
+      WRITE(6,100) N, TOTAL
+  100 FORMAT(' SUM OF 1 TO ', I5, ' = ', I10)
+      STOP
+      END

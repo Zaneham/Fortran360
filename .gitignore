@@ -23,3 +23,8 @@ wheels/
 venv/
 ENV/
 *.log
+
+# Fortran build artifacts
+*.o
+*.exe
+*.mod
